@@ -1,5 +1,28 @@
 {
   "dependencies": {
-    "crypto-js": "^4.1.1"
-  }
+    "body-parser": "^1.20.2",
+    "crypto-js": "^4.1.1",
+    "elliptic": "^6.5.4",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  },
+  "name": "blockchain",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shinobihao2001/blockchain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shinobihao2001/blockchain/issues"
+  },
+  "homepage": "https://github.com/shinobihao2001/blockchain#readme",
+  "description": ""
 }
