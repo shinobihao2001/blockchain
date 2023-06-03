@@ -134,5 +134,17 @@ const initConnection = (ws, ltvCoin) => {
   write(ws, queryLatestBlockMsg()); // when connect ask for latest block it have
 };
 
+const connectToPeer = (newPeer, ltvCoin) => {
+  const ws = new WebSocket(newPeer);
+  ws.on("open", () => {
+    initConnection(newPeer, ltvCoin);
+  });
+  ws.on("error", () => {
+    console.log("Connect error");
+  });
+};
+const getSockets = () => sockets;
 module.exports.initP2PServer = initP2PServer;
 module.exports.broadcastLatest = broadcastLatest;
+module.exports.connectToPeer = connectToPeer;
+module.exports.getSockets = getSockets;

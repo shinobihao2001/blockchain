@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const { Blockchain, Transaction } = require("./blockchain");
-const { initP2PServer } = require("./p2p");
+const { initP2PServer, connectToPeer, getSockets } = require("./p2p");
 
 let ltvCoin = new Blockchain();
 const httpPort = process.env.PORT || 3000;
@@ -43,6 +43,20 @@ const initHTTPSever = (httpPort) => {
     });
   });
 
+  app.get("/getPeers", (req, res) => {
+    result = getSockets();
+    res.status(200).json({
+      peers: result,
+    });
+  });
+
+  app.post("/addPeer", (req, res) => {
+    const { peer } = req.body;
+    connectToPeer(peer);
+    res.status(200).json({
+      message: "Yeah hope it connected",
+    });
+  });
   ///
   app.listen(httpPort, () => {
     console.log(`App listen on port ${httpPort}`);
