@@ -44,7 +44,9 @@ const initHTTPSever = (httpPort) => {
   });
 
   app.get("/getPeers", (req, res) => {
-    result = getSockets();
+    result = getSockets().map((temp) => {
+      temp._socket.remoteAddress + ": " + s._socket.remotePort;
+    });
     res.status(200).json({
       peers: result,
     });
