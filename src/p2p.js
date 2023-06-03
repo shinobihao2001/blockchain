@@ -1,8 +1,10 @@
-const { Blockchain } = require("./blockchain");
+const Blockchain = require("./blockchain").Blockchain;
 const { WebSocket } = require("ws");
 const { mode } = require("crypto-js");
 
 let sockets = []; // list of connected nodes
+// let dmCoin = new Blockchain();
+// console.log(dmCoin);
 const MessageType = {
   QUERY_LATEST: 0,
   QUERY_ALL: 1,
@@ -121,7 +123,14 @@ const broadcastLatest = () => {
 
 function initP2PServer(ltvCoin, p2pPort) {
   const server = new WebSocket.Server({ port: p2pPort });
+
   server.on("connection", (ws) => {
+    console.log(
+      ws._socket.remoteAddress +
+        ":" +
+        ws._socket.remotePort +
+        " is try to connecting"
+    );
     initConnection(ws, ltvCoin);
   });
   console.log("listening websocket p2p port on: " + p2pPort);
@@ -137,7 +146,7 @@ const initConnection = (ws, ltvCoin) => {
 const connectToPeer = (newPeer, ltvCoin) => {
   const ws = new WebSocket(newPeer);
   ws.on("open", () => {
-    initConnection(newPeer, ltvCoin);
+    initConnection(ws, ltvCoin);
   });
   ws.on("error", () => {
     console.log("Connect error");
