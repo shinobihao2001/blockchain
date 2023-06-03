@@ -1,10 +1,11 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const { Blockchain, Transaction } = require("./blockchain");
+const { initP2PServer } = require("./p2p");
 
 let ltvCoin = new Blockchain();
-
 const httpPort = process.env.PORT || 3000;
+const p2pPort = process.env.p2pPort || 6001;
 
 const initHTTPSever = (httpPort) => {
   const app = new express();
@@ -13,6 +14,10 @@ const initHTTPSever = (httpPort) => {
   app.use(express.urlencoded({ extended: true }));
 
   // Config Router
+  app.get("/blocks", (req, res) => {
+    res.status(200).send(ltvCoin);
+  });
+
   app.post("/createTransaction", (req, res) => {
     const { fromAddress, toAddress, amount } = req.body;
     const newTrans = new Transaction(fromAddress, toAddress, amount);
@@ -43,5 +48,5 @@ const initHTTPSever = (httpPort) => {
     console.log(`App listen on port ${httpPort}`);
   });
 };
-
 initHTTPSever(httpPort);
+initP2PServer(ltvCoin, p2pPort);

@@ -1,5 +1,6 @@
 const { mode } = require("crypto-js");
 const SHA256 = require("crypto-js/sha256");
+const { broadCastLatest } = require("./p2p");
 
 class Transaction {
   constructor(fromAddress, toAdderss, amount) {
@@ -57,11 +58,13 @@ class Blockchain {
     return this.chain[this.chain.length - 1];
   }
 
-  // addBlock(newBlock) {
-  //   newBlock.previousHash = this.getLatestBlock().hash;
-  //   newBlock.mineBlock(this.difficulty);
-  //   this.chain.push(newBlock);
-  // }
+  addBlock(newBlock) {
+    if (this.isValidNewBlock(newBlock)) {
+      this.chain.push(newBlock);
+      return true;
+    }
+    return false;
+  }
 
   minePendingTransaction(miningRewardAddress) {
     let block = new Block(
@@ -73,8 +76,9 @@ class Blockchain {
     block.mineBlock(this.difficulty);
 
     console.log("Block succesfully mined!");
-    this.chain.push(block);
-
+    this.addBlock(block);
+    //TODO: broad cast all
+    broadCastLatest();
     this.pendingTransactions = [
       new Transaction(null, miningRewardAddress, this.miningReward),
     ];
@@ -99,6 +103,18 @@ class Blockchain {
     return balance;
   }
 
+  isValidNewBlock(newBlock) {
+    previousBlock = this.getLatestBlock();
+    if (previousBlock.index + 1 !== newBlock.index) {
+      console.log("Invalid Index");
+      return false;
+    }
+    if (previousBlock.hash !== newBlock.previousHash) {
+      console.log("Invalid PreivousHash");
+      return false;
+    }
+    return true;
+  }
   isValidChain() {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
@@ -113,7 +129,23 @@ class Blockchain {
     }
     return true;
   }
+
+  replaceChain(newBlockChain) {
+    if (
+      newBlockChain.isValidChain() &&
+      newBlockChain.length() > this.chain.length()
+    ) {
+      console.log("Replace with newBlockChain");
+      this.chain = newBlockChain;
+      //TODO: broadcast to all nodes
+      broadCastLatest();
+    } else {
+      console.log("Invalid blockchain to replace");
+    }
+  }
 }
+
+//let ltvCoin = new Blockchain();
 
 module.exports.Blockchain = Blockchain;
 module.exports.Transaction = Transaction;
